@@ -30,18 +30,21 @@ def get_client() -> QdrantClient:
     return QdrantClient(
         url=url,
         api_key=api_key,
-        timeout=30.0,
+        timeout=3.0,
     )
 
 
 def check_qdrant_connection() -> bool:
     """Health & readiness probe to verify active connection to Qdrant cluster."""
     try:
+        s = get_settings()
+        if "localhost" in s.qdrant_url and os.getenv("ENVIRONMENT") == "production":
+            return False
         client = get_client()
-        name = get_settings().agentverse_collection
-        return client.collection_exists(name) or True
+        name = s.agentverse_collection
+        return client.collection_exists(name)
     except Exception as e:
-        logger.error(f"Qdrant connection health check failed: {e}")
+        logger.warning(f"Qdrant connection health check failed: {e}")
         return False
 
 
@@ -212,12 +215,15 @@ def delete_document(doc_id: str) -> None:
 def collection_count() -> int:
     """Return total number of vector points stored in Qdrant collection."""
     try:
+        s = get_settings()
+        if "localhost" in s.qdrant_url and os.getenv("ENVIRONMENT") == "production":
+            return 0
         client = get_client()
-        name = get_settings().agentverse_collection
+        name = s.agentverse_collection
 
         if not client.collection_exists(name):
             return 0
         return client.count(collection_name=name).count
     except Exception as e:
-        logger.error(f"Failed to count Qdrant points: {e}")
+        logger.warning(f"Failed to count Qdrant points: {e}")
         return 0
