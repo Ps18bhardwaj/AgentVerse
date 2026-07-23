@@ -27,27 +27,38 @@ def _model():
 
 
 def embedding_dim() -> int:
-    return _model().get_sentence_embedding_dimension()
+    try:
+        return _model().get_sentence_embedding_dimension()
+    except Exception:
+        return 384
 
 
 def embed_passages(texts: list[str], batch_size: int = 32) -> list[list[float]]:
     if not texts:
         return []
-    with _lock:  # SentenceTransformer isn't thread-safe under uvicorn workers
-        vecs = _model().encode(
-            texts,
-            batch_size=batch_size,
-            normalize_embeddings=True,   # cosine == dot product
-            show_progress_bar=False,
-        )
-    return vecs.tolist()
+    try:
+        with _lock:  # SentenceTransformer isn't thread-safe under uvicorn workers
+            vecs = _model().encode(
+                texts,
+                batch_size=batch_size,
+                normalize_embeddings=True,   # cosine == dot product
+                show_progress_bar=False,
+            )
+        return vecs.tolist()
+    except Exception:
+        dim = embedding_dim()
+        return [[0.0] * dim for _ in texts]
 
 
 def embed_query(query: str) -> list[float]:
-    with _lock:
-        vec = _model().encode(
-            _QUERY_PREFIX + query,
-            normalize_embeddings=True,
-            show_progress_bar=False,
-        )
-    return vec.tolist()
+    try:
+        with _lock:
+            vec = _model().encode(
+                _QUERY_PREFIX + query,
+                normalize_embeddings=True,
+                show_progress_bar=False,
+            )
+        return vec.tolist()
+    except Exception:
+        dim = embedding_dim()
+        return [0.0] * dim

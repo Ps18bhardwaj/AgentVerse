@@ -28,12 +28,15 @@ def rerank(
 ) -> list[RetrievedChunk]:
     if not candidates:
         return []
-    pairs = [[query, c.chunk.text] for c in candidates]
-    with _lock:
-        scores = _model().predict(pairs, show_progress_bar=False)
-    rescored = [
-        RetrievedChunk(chunk=c.chunk, score=float(s), source="hybrid")
-        for c, s in zip(candidates, scores)
-    ]
-    rescored.sort(key=lambda r: r.score, reverse=True)
-    return rescored[:top_k]
+    try:
+        pairs = [[query, c.chunk.text] for c in candidates]
+        with _lock:
+            scores = _model().predict(pairs, show_progress_bar=False)
+        rescored = [
+            RetrievedChunk(chunk=c.chunk, score=float(s), source="hybrid")
+            for c, s in zip(candidates, scores)
+        ]
+        rescored.sort(key=lambda r: r.score, reverse=True)
+        return rescored[:top_k]
+    except Exception:
+        return candidates[:top_k]

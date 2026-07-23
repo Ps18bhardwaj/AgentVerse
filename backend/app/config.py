@@ -27,7 +27,7 @@ class Settings(BaseSettings):
 
     # --- Models ---
     embedding_model: str = "BAAI/bge-small-en-v1.5"
-    reranker_model: str = "BAAI/bge-reranker-v2-m3"
+    reranker_model: str = "cross-encoder/ms-marco-MiniLM-L-6-v2"
     primary_model: str = "groq/llama-3.3-70b-versatile"
     fallback_model: str = "gemini/gemini-2.0-flash"
     rewrite_model: str = "groq/llama-3.1-8b-instant"

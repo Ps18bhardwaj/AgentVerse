@@ -19,10 +19,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Pre-download embedding + reranker models so cold starts are fast.
+# Pre-download embedding + reranker models so cold starts are fast and fit in free tier RAM.
 RUN python -c "from sentence_transformers import SentenceTransformer, CrossEncoder; \
-    SentenceTransformer('BAAI/bge-large-en-v1.5'); \
-    CrossEncoder('BAAI/bge-reranker-v2-m3')"
+    SentenceTransformer('BAAI/bge-small-en-v1.5'); \
+    CrossEncoder('cross-encoder/ms-marco-MiniLM-L-6-v2')"
 
 # Copy application code, database migrations, and vendored modules
 COPY app ./app
