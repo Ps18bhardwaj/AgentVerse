@@ -77,4 +77,3 @@ def init_db() -> None:
         logger.info("Database tables initialized successfully.")
     except Exception as e:
         logger.error(f"Database initialization error: {e}")
-        raise

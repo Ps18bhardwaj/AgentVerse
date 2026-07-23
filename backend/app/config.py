@@ -26,7 +26,7 @@ class Settings(BaseSettings):
     environment: str = "development"
 
     # --- Models ---
-    embedding_model: str = "BAAI/bge-large-en-v1.5"
+    embedding_model: str = "BAAI/bge-small-en-v1.5"
     reranker_model: str = "BAAI/bge-reranker-v2-m3"
     primary_model: str = "groq/llama-3.3-70b-versatile"
     fallback_model: str = "gemini/gemini-2.0-flash"

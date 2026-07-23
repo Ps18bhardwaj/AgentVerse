@@ -14,17 +14,26 @@ import threading
 
 from .retrieval import embeddings, rerank
 
+import os
+import logging
+
+logger = logging.getLogger(__name__)
+
 _ready = threading.Event()
 _started = threading.Event()
 
 
 def _warm() -> None:
+    if os.getenv("DISABLE_WARMUP", "").lower() in ("true", "1", "yes"):
+        logger.info("Model warmup is disabled via DISABLE_WARMUP.")
+        _ready.set()
+        return
     try:
         # Loading + a tiny inference fully initialises each model.
         embeddings.embed_query("warmup")
         rerank._model().predict([["warmup query", "warmup passage"]])
-    except Exception:  # pragma: no cover - never crash startup on warmup
-        pass
+    except Exception as e:  # pragma: no cover - never crash startup on warmup
+        logger.warning(f"Model warmup skipped: {e}")
     finally:
         _ready.set()
 
