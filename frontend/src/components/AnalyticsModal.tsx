@@ -1,6 +1,7 @@
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Activity, Database, Cpu, Zap, CheckCircle, ShieldCheck, BarChart2 } from "lucide-react";
+import { BASE } from "../lib/api";
 
 interface AnalyticsData {
   total_documents: number;
@@ -15,7 +16,7 @@ export const AnalyticsModal: React.FC = () => {
   const { data, isLoading, refetch } = useQuery<AnalyticsData>({
     queryKey: ["analytics"],
     queryFn: async () => {
-      const res = await fetch("http://localhost:8000/analytics");
+      const res = await fetch(`${BASE}/analytics`);
       if (!res.ok) throw new Error("Failed to fetch analytics");
       return res.json();
     },

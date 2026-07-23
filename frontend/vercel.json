@@ -10,7 +10,7 @@
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "https://agentverse-backend.up.railway.app/$1"
+      "dest": "https://agentverse-c0mh.onrender.com/$1"
     },
     {
       "handle": "filesystem"

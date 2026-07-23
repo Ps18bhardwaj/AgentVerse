@@ -53,7 +53,7 @@ class Settings(BaseSettings):
 
     # --- API ---
     agentverse_api_port: int = 8000
-    cors_origins: str = "http://localhost:3000,http://localhost:5173,http://127.0.0.1:5173"
+    cors_origins: str = "http://localhost:3000,http://localhost:5173,http://127.0.0.1:5173,https://agent-verse-roan.vercel.app,https://agentverse-c0mh.onrender.com"
 
     # --- Storage ---
     upload_dir: Path = _BACKEND_ROOT / "data" / "uploads"

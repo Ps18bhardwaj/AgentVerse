@@ -82,7 +82,7 @@ export function AgentsPanel() {
 
       await new Promise((r) => setTimeout(r, 400));
 
-      const apiHost = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
+      const apiHost = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_BASE || "https://agentverse-c0mh.onrender.com";
       const res = await fetch(`${apiHost}/agents/run`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
