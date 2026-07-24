@@ -1,0 +1,34 @@
+services:
+  # Backend FastAPI Web Service
+  - type: web
+    name: agentverse-backend
+    env: python
+    region: oregon
+    plan: free
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: (alembic upgrade head || true) && uvicorn app.api.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: DISABLE_WARMUP
+        value: "true"
+      - key: PRIMARY_MODEL
+        value: groq/llama-3.3-70b-versatile
+      - key: FALLBACK_MODEL
+        value: gemini/gemini-2.0-flash
+      - key: FALLBACK_MODEL_2
+        value: gemini/gemini-1.5-flash
+      - key: GROQ_API_KEY
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: QDRANT_URL
+        sync: false
+      - key: QDRANT_API_KEY
+        sync: false
+      - key: JWT_SECRET_KEY
+        generateValue: true

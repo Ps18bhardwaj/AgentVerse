@@ -17,7 +17,7 @@ from sqlalchemy.orm import Session
 from ..db.database import get_db
 from ..db.models import AuditLog, User, UserSession
 
-SECRET_KEY = os.getenv("JWT_SECRET_KEY", "agentverse_production_jwt_super_secret_key_2026_change_in_env")
+SECRET_KEY = os.getenv("JWT_SECRET_KEY") or os.getenv("JWT_SECRET") or "agentverse_production_jwt_super_secret_key_2026_change_in_env"
 
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 15
