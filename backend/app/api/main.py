@@ -418,9 +418,10 @@ from ..retrieval.graph import extract_document_graph
 
 
 @app.get("/graph")
-def get_knowledge_graph() -> dict:
+def get_knowledge_graph(doc_ids: str | None = None) -> dict:
     """Generate dynamic knowledge graph nodes and edges from stored chunks."""
-    all_chunks = store.scroll_all_chunks()
+    filter_ids = [d.strip() for d in doc_ids.split(",") if d.strip()] if doc_ids else None
+    all_chunks = store.scroll_all_chunks(doc_ids=filter_ids)
     if not all_chunks:
         return {"nodes": [], "links": []}
     chunk_dicts = [c.model_dump() for c in all_chunks]

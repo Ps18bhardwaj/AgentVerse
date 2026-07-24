@@ -33,32 +33,32 @@ def extract_document_graph(chunks: list[dict[str, Any]]) -> dict[str, Any]:
     links: list[GraphLink] = []
     concept_counts: dict[str, int] = defaultdict(int)
 
-    # Keywords / entity regex patterns (acronyms, camelCase, section titles, capitalized terms)
-    entity_pattern = re.compile(r"\b([A-Z][a-z0-9]+(?:\s+[A-Z][a-z0-9]+)*|[A-Z]{2,})\b")
+    # Keywords / entity regex patterns (acronyms, camelCase, SQL types, technical terms, uppercase keywords)
+    entity_pattern = re.compile(r"\b([A-Z][a-z0-9]+(?:\s+[A-Z][a-z0-9]+)*|[A-Z]{2,}|[a-z]+(?:_[a-z]+)+)\b")
 
     for chunk in chunks:
         doc_id = chunk.get("doc_id", "unknown_doc")
         doc_name = chunk.get("doc_name", "Document")
         text = chunk.get("text", "")
         section = chunk.get("section")
+        page = chunk.get("page", 1)
 
         # Ensure Document Node exists
         if doc_id not in nodes:
-            nodes[doc_id] = GraphNode(id=doc_id, label=doc_name, type="doc", val=5)
+            nodes[doc_id] = GraphNode(id=doc_id, label=doc_name, type="doc", val=8)
 
-        # Section Node if present
-        if section:
-            section_id = f"{doc_id}_sec_{section}"
-            if section_id not in nodes:
-                nodes[section_id] = GraphNode(id=section_id, label=section, type="section", val=3)
-                links.append(GraphLink(source=doc_id, target=section_id, label="contains"))
+        # Section or Page Node
+        section_id = f"{doc_id}_page_{page}"
+        if section_id not in nodes:
+            nodes[section_id] = GraphNode(id=section_id, label=f"{doc_name} (p.{page})", type="section", val=4)
+            links.append(GraphLink(source=doc_id, target=section_id, label="contains"))
 
         # Extract entities / terms
         matches = set(entity_pattern.findall(text))
         for match in matches:
             term = match.strip()
-            if len(term) < 3 or term.lower() in {
-                "the", "this", "that", "with", "from", "for", "and", "sources", "page", "section"
+            if len(term) < 2 or term.lower() in {
+                "the", "this", "that", "with", "from", "for", "and", "sources", "page", "section", "null", "none", "true", "false"
             }:
                 continue
             concept_counts[term] += 1
@@ -67,8 +67,7 @@ def extract_document_graph(chunks: list[dict[str, Any]]) -> dict[str, Any]:
             if concept_id not in nodes:
                 nodes[concept_id] = GraphNode(id=concept_id, label=term, type="concept", val=2)
 
-            parent_id = f"{doc_id}_sec_{section}" if section else doc_id
-            links.append(GraphLink(source=parent_id, target=concept_id, label="mentions"))
+            links.append(GraphLink(source=section_id, target=concept_id, label="mentions"))
 
     # Update concept node sizes based on frequency
     for term, count in concept_counts.items():

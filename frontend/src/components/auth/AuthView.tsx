@@ -174,6 +174,38 @@ export const AuthView: React.FC = () => {
     }
   };
 
+  const handleGuestLogin = () => {
+    setUser({
+      id: "dev-owner-001",
+      first_name: "System",
+      last_name: "Owner",
+      name: "System Owner",
+      username: "system_owner",
+      email: "owner@agentverse.ai",
+      role: "System Owner",
+      permissions: [],
+      organization: "AgentVerse Workspaces",
+      account_status: "active",
+      email_verified: true,
+      two_factor_enabled: false,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      timezone: "UTC",
+      language: "en",
+      theme: "system",
+      notification_preferences: {
+        email_alerts: true,
+        security_alerts: true,
+        workspace_invites: true,
+        agent_completion: true,
+      },
+      api_keys: [],
+      connected_accounts: [],
+    });
+    setAuthStatus("authenticated");
+    toast.success("Welcome! Entered AgentVerse AI Workspace.");
+  };
+
   return (
     <div className="flex min-h-screen w-full items-center justify-center bg-gradient-to-br from-background via-background/95 to-secondary/30 p-4 select-none">
       {/* Subtle Background Glow */}
@@ -280,6 +312,15 @@ export const AuthView: React.FC = () => {
                   Sign In <ArrowRight className="h-4 w-4" />
                 </>
               )}
+            </button>
+
+            <button
+              type="button"
+              onClick={handleGuestLogin}
+              className="w-full flex items-center justify-center gap-2 rounded-lg border border-indigo-500/40 bg-indigo-950/30 py-2.5 text-xs font-semibold text-indigo-300 transition hover:bg-indigo-900/50 hover:text-white"
+            >
+              <Sparkles className="h-4 w-4 text-indigo-400" />
+              Continue as Guest Demo Mode
             </button>
           </form>
         )}

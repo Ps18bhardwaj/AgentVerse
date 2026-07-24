@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import logging
 import time
 import uuid
 from typing import Any, AsyncGenerator, Dict, List
@@ -10,6 +11,8 @@ from typing import Any, AsyncGenerator, Dict, List
 from ..llm_compat import chat
 from ..models import AgentRunResult, AgentStep, AgentTaskRequest
 from ..retrieval import pipeline
+
+logger = logging.getLogger(__name__)
 
 
 AGENT_PROMPTS: Dict[str, str] = {
@@ -49,16 +52,21 @@ class EnterpriseAgentEngine:
         }
         await asyncio.sleep(0.1)
 
-        # Retrieval context if docs specified
+        # Retrieve document context (from specified doc_ids or all uploaded docs)
         context_str = ""
-        if request.doc_ids:
+        try:
             chunks = pipeline.retrieve(
-                query=request.prompt, mode="hybrid_rerank", top_k=5, doc_ids=request.doc_ids
+                query=request.prompt,
+                mode="hybrid_rerank",
+                top_k=5,
+                doc_ids=request.doc_ids if request.doc_ids else None,
             )
             if chunks:
                 context_str = "\n\nRetrieved Document Context:\n" + "\n---\n".join(
                     [f"[{c.chunk.doc_name} p.{c.chunk.page}]: {c.chunk.text}" for c in chunks]
                 )
+        except Exception as err:
+            logger.warning(f"Agent context retrieval failed: {err}")
 
         # Step 2: Tool Calling & Reasoning
         yield {

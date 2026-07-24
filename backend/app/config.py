@@ -53,7 +53,7 @@ class Settings(BaseSettings):
 
     # --- API ---
     agentverse_api_port: int = 8000
-    cors_origins: str = "http://localhost:3000,http://localhost:5173,http://localhost:5175,http://127.0.0.1:5173,http://127.0.0.1:5175,http://127.0.0.1:3000,https://agentverse-1f1a.onrender.com"
+    cors_origins: str = "http://localhost:3000,http://localhost:5173,http://localhost:5175,http://127.0.0.1:5173,http://127.0.0.1:5175,http://127.0.0.1:3000"
 
     # --- Storage ---
     upload_dir: Path = _BACKEND_ROOT / "data" / "uploads"

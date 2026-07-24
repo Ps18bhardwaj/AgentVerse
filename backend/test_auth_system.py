@@ -13,6 +13,7 @@ if TEST_DB_FILE.exists():
     TEST_DB_FILE.unlink()
 
 os.environ["DATABASE_URL"] = f"sqlite:///{TEST_DB_FILE}"
+os.environ["REQUIRE_AUTH"] = "true"
 
 from app.api.main import app
 from app.db.database import Base, engine, init_db

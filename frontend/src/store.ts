@@ -58,6 +58,24 @@ export interface ChatMessage {
   };
 }
 
+export interface ApprovalTask {
+  id: string;
+  source: string;
+  title: string;
+  description: string;
+  proposedAction: string;
+  status: "pending" | "approved" | "rejected";
+  createdAt: number;
+}
+
+export interface TeamMember {
+  id: string;
+  name: string;
+  email: string;
+  role: "Admin" | "Member" | "Viewer";
+  isCurrentUser?: boolean;
+}
+
 export interface ChatSession {
   id: string;
   title: string;
@@ -164,6 +182,18 @@ interface AppState {
   addMessage: (m: ChatMessage) => void;
   updateMessage: (id: string, patch: Partial<ChatMessage>) => void;
   appendToken: (id: string, token: string) => void;
+
+  // Human Approval Queue State
+  approvalTasks: ApprovalTask[];
+  addApprovalTask: (task: Omit<ApprovalTask, "id" | "createdAt" | "status"> & { status?: "pending" | "approved" | "rejected" }) => void;
+  resolveApprovalTask: (id: string, status: "approved" | "rejected") => void;
+  deleteApprovalTask: (id: string) => void;
+  clearApprovalTasks: () => void;
+
+  // Team Members State (Workspace Settings & RBAC)
+  teamMembers: TeamMember[];
+  addTeamMember: (member: Omit<TeamMember, "id">) => void;
+  removeTeamMember: (id: string) => void;
 }
 
 function mutateActive(
@@ -348,6 +378,61 @@ export const useStore = create<AppState>()(
             ),
           }))
         ),
+
+      approvalTasks: [
+        {
+          id: "appr-101",
+          source: "Automation Agent",
+          title: "Dispatch Executive Weekly Summary Email",
+          description: "Send compiled PDF metrics report to c-suite@company.com",
+          proposedAction: "email_to: c-suite@company.com | subject: Weekly AI Digest",
+          status: "pending",
+          createdAt: Date.now() - 3600000,
+        },
+        {
+          id: "appr-102",
+          source: "GitHub Workflow Node",
+          title: "Publish Release v2.4 Tag to Main Repository",
+          description: "Create release branch and push tag to production repository",
+          proposedAction: "repo: acme/agentverse | tag: v2.4.0",
+          status: "pending",
+          createdAt: Date.now() - 1800000,
+        },
+      ],
+      addApprovalTask: (task) =>
+        set((s) => ({
+          approvalTasks: [
+            {
+              id: `appr-${Date.now()}`,
+              createdAt: Date.now(),
+              status: task.status || "pending",
+              ...task,
+            },
+            ...s.approvalTasks,
+          ],
+        })),
+      resolveApprovalTask: (id, status) =>
+        set((s) => ({
+          approvalTasks: s.approvalTasks.map((t) => (t.id === id ? { ...t, status } : t)),
+        })),
+      deleteApprovalTask: (id) =>
+        set((s) => ({
+          approvalTasks: s.approvalTasks.filter((t) => t.id !== id),
+        })),
+      clearApprovalTasks: () => set({ approvalTasks: [] }),
+
+      teamMembers: [],
+      addTeamMember: (member) =>
+        set((s) => ({
+          teamMembers: [
+            ...s.teamMembers,
+            { id: `user-${Date.now()}`, ...member },
+          ],
+        })),
+      removeTeamMember: (id) =>
+        set((s) => ({
+          teamMembers: s.teamMembers.filter((m) => m.id !== id),
+        })),
     }),
     {
       name: "agentverse-conversational-store",
@@ -358,6 +443,8 @@ export const useStore = create<AppState>()(
         theme: s.theme,
         activeSessionId: s.activeSessionId,
         folders: s.folders,
+        approvalTasks: s.approvalTasks,
+        teamMembers: s.teamMembers,
         sessions: Object.fromEntries(
           Object.entries(s.sessions).map(([id, sess]) => [
             id,
