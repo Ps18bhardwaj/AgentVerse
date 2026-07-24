@@ -9,13 +9,14 @@ export default defineConfig({
     alias: { "@": path.resolve(__dirname, "./src") },
   },
   server: {
-    port: 3000,
+    port: 5175,
     host: "0.0.0.0",
     proxy: {
-      // Proxy API calls to the FastAPI backend during dev.
+      // Proxy API calls and WebSocket connections to the FastAPI backend during dev.
       "/api": {
         target: "http://localhost:8000",
         changeOrigin: true,
+        ws: true,
         rewrite: (p) => p.replace(/^\/api/, ""),
       },
     },

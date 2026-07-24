@@ -10,7 +10,7 @@
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "https://agentverse-c0mh.onrender.com/$1"
+      "dest": "http://localhost:8000/$1"
     },
     {
       "handle": "filesystem"

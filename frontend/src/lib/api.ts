@@ -1,6 +1,6 @@
 // Typed API client for the AgentVerse FastAPI backend.
 
-// In dev, Vite proxies /api -> https://agentverse-c0mh.onrender.com (see vite.config.ts).
+// In dev, Vite proxies /api -> http://localhost:8000 (see vite.config.ts).
 export const BASE = import.meta.env.VITE_API_BASE || import.meta.env.VITE_API_BASE_URL || "/api";
 
 export type SourceType = "pdf" | "docx" | "text";

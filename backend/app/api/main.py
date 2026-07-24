@@ -414,6 +414,19 @@ def ask_stream(
     )
 
 
+from ..retrieval.graph import extract_document_graph
+
+
+@app.get("/graph")
+def get_knowledge_graph() -> dict:
+    """Generate dynamic knowledge graph nodes and edges from stored chunks."""
+    all_chunks = store.scroll_all_chunks()
+    if not all_chunks:
+        return {"nodes": [], "links": []}
+    chunk_dicts = [c.model_dump() for c in all_chunks]
+    return extract_document_graph(chunk_dicts)
+
+
 @app.get("/")
 def root() -> dict:
     return {"name": "AgentVerse", "docs": "/docs", "health": "/health"}

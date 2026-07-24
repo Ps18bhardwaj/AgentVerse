@@ -1,0 +1,28 @@
+# Environment variable files
+.env
+.env.*
+!.env.example
+*.env
+
+# Python / Backend build and cache artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+htmlcov/
+*.db
+*.sqlite
+data/
+backend/data/
+
+# Node / Frontend build and dependency artifacts
+node_modules/
+dist/
+.output/
+.vercel/
+
+# System and IDE metadata
+.DS_Store
+.vscode/
+.idea/

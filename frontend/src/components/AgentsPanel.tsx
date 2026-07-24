@@ -22,6 +22,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useStore } from "@/store";
 import { toast } from "sonner";
+import { BASE } from "@/lib/api";
 
 interface Agent {
   id: string;
@@ -82,8 +83,7 @@ export function AgentsPanel() {
 
       await new Promise((r) => setTimeout(r, 400));
 
-      const apiHost = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_BASE || "https://agentverse-c0mh.onrender.com";
-      const res = await fetch(`${apiHost}/agents/run`, {
+      const res = await fetch(`${BASE}/agents/run`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

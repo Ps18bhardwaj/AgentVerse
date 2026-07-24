@@ -1,0 +1,11 @@
+# Environment variable files
+.env
+.env.*
+!.env.example
+
+# Python cache & build artifacts
+__pycache__/
+*.pyc
+.pytest_cache/
+data/
+*.db
