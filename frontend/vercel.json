@@ -10,7 +10,7 @@
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "http://localhost:8000/$1"
+      "dest": "https://agentverse-1f1a.onrender.com/$1"
     },
     {
       "handle": "filesystem"

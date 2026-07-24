@@ -12,9 +12,9 @@ export default defineConfig({
     port: 5175,
     host: "0.0.0.0",
     proxy: {
-      // Proxy API calls and WebSocket connections to the FastAPI backend during dev.
+      // Proxy API calls and WebSocket connections to the Render FastAPI backend.
       "/api": {
-        target: "http://localhost:8000",
+        target: process.env.VITE_API_BASE_URL || "https://agentverse-1f1a.onrender.com",
         changeOrigin: true,
         ws: true,
         rewrite: (p) => p.replace(/^\/api/, ""),
